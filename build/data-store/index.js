@@ -29,21 +29,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__);
-// import { __ } from "@wordpress/i18n";
-// import { useBlockProps } from "@wordpress/block-editor";
-// import "./editor.scss";
-// export default function Edit() {
-// 	return (
-// 		<div {...useBlockProps()}>
-// 			<h2>{wp.data.select("core/editor").getEditedPostAttribute("title")}</h2>
-// 			<input
-// 				value={wp.data.select("core/editor").getEditedPostAttribute("title")}
-// 			onChange={(e)=>wp.data.dispatch('core/editor').editPost({title: e.target.value })}
-// 			/>
-// 		</div>
-// 	);
-// }
-
 
 
 
