@@ -1,0 +1,1 @@
+{"version":3,"file":"todos-store/index.css","mappings":";;;AAEA;EACC;AADD,C","sources":["webpack://data-store/./src/todos-store/editor.scss"],"sourcesContent":["\n\n.wp-block-create-block-data-store {\n\tborder: 1px dotted #f00;\n}\n"],"names":[],"sourceRoot":""}
