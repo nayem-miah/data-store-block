@@ -12,6 +12,170 @@ module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/tru
 
 /***/ }),
 
+/***/ "./src/todos-store/data/actions.js":
+/*!*****************************************!*\
+  !*** ./src/todos-store/data/actions.js ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   addTodo: () => (/* binding */ addTodo)
+/* harmony export */ });
+/* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./types */ "./src/todos-store/data/types.js");
+
+const addTodo = todo => {
+  return {
+    type: _types__WEBPACK_IMPORTED_MODULE_0__.types?.ADD_TODO,
+    todo
+  };
+};
+
+/***/ }),
+
+/***/ "./src/todos-store/data/controls.js":
+/*!******************************************!*\
+  !*** ./src/todos-store/data/controls.js ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   fetchTodos: () => (/* binding */ fetchTodos)
+/* harmony export */ });
+/* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./types */ "./src/todos-store/data/types.js");
+
+const fetchTodos = () => {
+  return {
+    type: _types__WEBPACK_IMPORTED_MODULE_0__.types?.FETCH_TODO
+  };
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  FETCH_TODO() {
+    return window.fetch('https://jsonplaceholder.typicode.com/todos?_limit=10').then(response => response.json());
+  }
+});
+
+/***/ }),
+
+/***/ "./src/todos-store/data/index.js":
+/*!***************************************!*\
+  !*** ./src/todos-store/data/index.js ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _reducer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./reducer */ "./src/todos-store/data/reducer.js");
+/* harmony import */ var _selectors__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./selectors */ "./src/todos-store/data/selectors.js");
+/* harmony import */ var _actions__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./actions */ "./src/todos-store/data/actions.js");
+/* harmony import */ var _resolvers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./resolvers */ "./src/todos-store/data/resolvers.js");
+/* harmony import */ var _controls__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./controls */ "./src/todos-store/data/controls.js");
+
+
+
+
+
+
+const store = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxStore)('create-block/todos-store', {
+  reducer: _reducer__WEBPACK_IMPORTED_MODULE_1__["default"],
+  //reducer is to update date
+  actions: _actions__WEBPACK_IMPORTED_MODULE_3__,
+  //actions is to create data
+  selectors: _selectors__WEBPACK_IMPORTED_MODULE_2__,
+  // selector is to retrive data
+  resolvers: _resolvers__WEBPACK_IMPORTED_MODULE_4__,
+  // we can run some sideEffect in resolvers
+  controls: _controls__WEBPACK_IMPORTED_MODULE_5__["default"]
+});
+(0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.register)(store);
+
+/***/ }),
+
+/***/ "./src/todos-store/data/reducer.js":
+/*!*****************************************!*\
+  !*** ./src/todos-store/data/reducer.js ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./types */ "./src/todos-store/data/types.js");
+
+const DEFAULT_STATE = {
+  items: []
+};
+const reducer = (state = DEFAULT_STATE, action) => {
+  switch (action.type) {
+    case _types__WEBPACK_IMPORTED_MODULE_0__.types?.ADD_TODO:
+      return {
+        ...state,
+        items: [...state.items, action.todo]
+      };
+    default:
+      return state;
+  }
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (reducer);
+
+/***/ }),
+
+/***/ "./src/todos-store/data/resolvers.js":
+/*!*******************************************!*\
+  !*** ./src/todos-store/data/resolvers.js ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getTodos: () => (/* binding */ getTodos)
+/* harmony export */ });
+/* harmony import */ var _controls__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./controls */ "./src/todos-store/data/controls.js");
+
+function* getTodos() {
+  const todos = yield (0,_controls__WEBPACK_IMPORTED_MODULE_0__.fetchTodos)();
+  console.log(todos);
+}
+
+/***/ }),
+
+/***/ "./src/todos-store/data/selectors.js":
+/*!*******************************************!*\
+  !*** ./src/todos-store/data/selectors.js ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getTodos: () => (/* binding */ getTodos)
+/* harmony export */ });
+const getTodos = state => {
+  return state.items;
+};
+
+/***/ }),
+
+/***/ "./src/todos-store/data/types.js":
+/*!***************************************!*\
+  !*** ./src/todos-store/data/types.js ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   types: () => (/* binding */ types)
+/* harmony export */ });
+const types = {
+  ADD_TODO: 'ADD_TODO',
+  FETCH_TODO: 'FETCH_TODO'
+};
+
+/***/ }),
+
 /***/ "./src/todos-store/edit.js":
 /*!*********************************!*\
   !*** ./src/todos-store/edit.js ***!
@@ -79,6 +243,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./style.scss */ "./src/todos-store/style.scss");
 /* harmony import */ var _edit__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./edit */ "./src/todos-store/edit.js");
 /* harmony import */ var _block_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./block.json */ "./src/todos-store/block.json");
+/* harmony import */ var _data__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./data */ "./src/todos-store/data/index.js");
+
 
 
 
