@@ -1,4 +1,6 @@
 export const types = {
 	ADD_TODO: 'ADD_TODO',
 	FETCH_TODO: 'FETCH_TODO',
+	POPULATE_TODO: 'POPULATE_TODO',
+	CREATE_TODO: 'CREATE_TODO',
 };

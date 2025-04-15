@@ -20,41 +20,32 @@ module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/tru
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   addTodo: () => (/* binding */ addTodo)
+/* harmony export */   addTodo: () => (/* binding */ addTodo),
+/* harmony export */   createTodo: () => (/* binding */ createTodo),
+/* harmony export */   populateToDo: () => (/* binding */ populateToDo)
 /* harmony export */ });
 /* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./types */ "./src/todos-store/data/types.js");
 
-const addTodo = todo => {
+
+// Adds a single todo to the store
+function addTodo(addNewTodo) {
+  //step 1
   return {
     type: _types__WEBPACK_IMPORTED_MODULE_0__.types?.ADD_TODO,
-    todo
+    addNewTodo
   };
-};
+}
 
-/***/ }),
-
-/***/ "./src/todos-store/data/controls.js":
-/*!******************************************!*\
-  !*** ./src/todos-store/data/controls.js ***!
-  \******************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
-/* harmony export */   fetchTodos: () => (/* binding */ fetchTodos)
-/* harmony export */ });
-/* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./types */ "./src/todos-store/data/types.js");
-
-const fetchTodos = () => {
+// Populates the store with a list of todos (from an API fetch)
+const populateToDo = todos => {
   return {
-    type: _types__WEBPACK_IMPORTED_MODULE_0__.types?.FETCH_TODO
+    type: _types__WEBPACK_IMPORTED_MODULE_0__.types?.POPULATE_TODO,
+    todos
   };
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  FETCH_TODO() {
-    return window.fetch('https://jsonplaceholder.typicode.com/todos?_limit=10').then(response => response.json());
-  }
+const createTodo = title => ({
+  type: _types__WEBPACK_IMPORTED_MODULE_0__.types.CREATE_TODO,
+  title
 });
 
 /***/ }),
@@ -72,14 +63,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _selectors__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./selectors */ "./src/todos-store/data/selectors.js");
 /* harmony import */ var _actions__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./actions */ "./src/todos-store/data/actions.js");
 /* harmony import */ var _resolvers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./resolvers */ "./src/todos-store/data/resolvers.js");
-/* harmony import */ var _controls__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./controls */ "./src/todos-store/data/controls.js");
-
 
 
 
 
 
 const store = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxStore)('create-block/todos-store', {
+  // we get data store 'create-block/todos-store' with the name
   reducer: _reducer__WEBPACK_IMPORTED_MODULE_1__["default"],
   //reducer is to update date
   actions: _actions__WEBPACK_IMPORTED_MODULE_3__,
@@ -88,7 +78,33 @@ const store = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxStore)(
   // selector is to retrive data
   resolvers: _resolvers__WEBPACK_IMPORTED_MODULE_4__,
   // we can run some sideEffect in resolvers
-  controls: _controls__WEBPACK_IMPORTED_MODULE_5__["default"]
+  controls: {
+    FETCH_TODO() {
+      //the function has to be same as your types name
+      return window.fetch('https://jsonplaceholder.typicode.com/todos?_limit=10').then(response => response.json());
+    },
+    CREATE_TODO({
+      title
+    }) {
+      console.log('title.................', title);
+      return window.fetch('https://jsonplaceholder.typicode.com/todos', {
+        method: 'POST',
+        body: JSON.stringify({
+          title,
+          completed: false,
+          userId: 1
+        }),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8'
+        }
+      }).then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Could not create todo.');
+      });
+    }
+  }
 });
 (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.register)(store);
 
@@ -110,11 +126,17 @@ const DEFAULT_STATE = {
   items: []
 };
 const reducer = (state = DEFAULT_STATE, action) => {
+  //step 2
   switch (action.type) {
     case _types__WEBPACK_IMPORTED_MODULE_0__.types?.ADD_TODO:
       return {
         ...state,
-        items: [...state.items, action.todo]
+        items: [...state.items, action.addNewTodo]
+      };
+    case _types__WEBPACK_IMPORTED_MODULE_0__.types?.POPULATE_TODO:
+      return {
+        ...state,
+        items: action.todos
       };
     default:
       return state;
@@ -132,13 +154,29 @@ const reducer = (state = DEFAULT_STATE, action) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   createNewTodo: () => (/* binding */ createNewTodo),
 /* harmony export */   getTodos: () => (/* binding */ getTodos)
 /* harmony export */ });
-/* harmony import */ var _controls__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./controls */ "./src/todos-store/data/controls.js");
+/* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./types */ "./src/todos-store/data/types.js");
+/* harmony import */ var _actions__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./actions */ "./src/todos-store/data/actions.js");
+
 
 function* getTodos() {
-  const todos = yield (0,_controls__WEBPACK_IMPORTED_MODULE_0__.fetchTodos)();
-  console.log(todos);
+  const todos = yield {
+    type: _types__WEBPACK_IMPORTED_MODULE_0__.types?.FETCH_TODO
+  };
+  yield (0,_actions__WEBPACK_IMPORTED_MODULE_1__.populateToDo)(todos);
+}
+function* createNewTodo(title) {
+  console.log('createNewTodo called with title:', title); // 👈 Check here
+
+  const todo = yield {
+    type: _types__WEBPACK_IMPORTED_MODULE_0__.types.CREATE_TODO,
+    title
+  };
+  console.log('Returned from API:', todo); // 👈 See if API returned anything
+
+  yield (0,_actions__WEBPACK_IMPORTED_MODULE_1__.addTodo)(todo);
 }
 
 /***/ }),
@@ -154,6 +192,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   getTodos: () => (/* binding */ getTodos)
 /* harmony export */ });
 const getTodos = state => {
+  // we call data with the function
   return state.items;
 };
 
@@ -171,7 +210,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 const types = {
   ADD_TODO: 'ADD_TODO',
-  FETCH_TODO: 'FETCH_TODO'
+  FETCH_TODO: 'FETCH_TODO',
+  POPULATE_TODO: 'POPULATE_TODO',
+  CREATE_TODO: 'CREATE_TODO'
 };
 
 /***/ }),
@@ -191,28 +232,62 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _editor_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./editor.scss */ "./src/todos-store/editor.scss");
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__);
+
+
+
 
 
 
 
 function Edit() {
-  const title = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => {
-    return select('core/editor').getEditedPostAttribute('title');
-  });
-  const {
-    editPost
-  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useDispatch)('core/editor');
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+  const [newToDo, setNewToDo] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useState)('');
+  const todos = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => {
+    const toDoStore = select('create-block/todos-store');
+    return toDoStore && toDoStore.getTodos();
+  }, []);
+  const actions = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useDispatch)('create-block/todos-store');
+  const addTodo = actions && actions.addTodo;
+  const handleForm = async e => {
+    e.preventDefault();
+    if (addTodo) {
+      await addTodo({
+        title: newToDo,
+        completed: false,
+        id: 1
+      });
+      setNewToDo('');
+    }
+  };
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
     ...(0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps)(),
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h2", {
-      children: title
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
-      value: title,
-      onChange: e => editPost({
-        title: e.target.value
-      })
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("ul", {
+      children: todos?.map(todo => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("li", {
+        className: todo?.completed && 'todo-completed',
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.CheckboxControl, {
+          label: todo?.title,
+          checked: todo?.completed,
+          onChange: value => console.log(value)
+        })
+      }, todo?.id))
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("form", {
+      onSubmit: handleForm,
+      className: "addtodo-form",
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextControl, {
+        value: newToDo,
+        onChange: v => setNewToDo(v)
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
+        type: "submit",
+        isPrimary: true,
+        children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Add To Do', 'todos-store')
+      })]
     })]
   });
 }
@@ -292,6 +367,16 @@ module.exports = window["wp"]["blocks"];
 
 /***/ }),
 
+/***/ "@wordpress/components":
+/*!************************************!*\
+  !*** external ["wp","components"] ***!
+  \************************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["components"];
+
+/***/ }),
+
 /***/ "@wordpress/data":
 /*!******************************!*\
   !*** external ["wp","data"] ***!
@@ -299,6 +384,26 @@ module.exports = window["wp"]["blocks"];
 /***/ ((module) => {
 
 module.exports = window["wp"]["data"];
+
+/***/ }),
+
+/***/ "@wordpress/element":
+/*!*********************************!*\
+  !*** external ["wp","element"] ***!
+  \*********************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["element"];
+
+/***/ }),
+
+/***/ "@wordpress/i18n":
+/*!******************************!*\
+  !*** external ["wp","i18n"] ***!
+  \******************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["i18n"];
 
 /***/ }),
 
