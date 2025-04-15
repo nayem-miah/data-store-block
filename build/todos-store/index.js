@@ -21,7 +21,6 @@ module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/tru
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   addTodo: () => (/* binding */ addTodo),
-/* harmony export */   createTodo: () => (/* binding */ createTodo),
 /* harmony export */   populateToDo: () => (/* binding */ populateToDo)
 /* harmony export */ });
 /* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./types */ "./src/todos-store/data/types.js");
@@ -43,10 +42,6 @@ const populateToDo = todos => {
     todos
   };
 };
-const createTodo = title => ({
-  type: _types__WEBPACK_IMPORTED_MODULE_0__.types.CREATE_TODO,
-  title
-});
 
 /***/ }),
 

@@ -16,8 +16,3 @@ export const populateToDo = ( todos ) => {
 	};
 };
 
-
-export const createTodo = (title) => ({
-	type: types.CREATE_TODO,
-	title,
-});
